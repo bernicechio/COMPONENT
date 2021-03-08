@@ -112,7 +112,7 @@ public class BlockNestedJoin extends Join {
         while (!outbatch.isFull()) {
             if (lcurs == 0 && eosr == true) {
                 /** new left page is to be fetched**/
-                for (int i = 0; i < NumBuff - 2; i++) {
+                for (i = 0; i < numBuff - 2; i++) {
                     leftbatch = (Batch) left.next();
 
                     if (leftbatch == null) {
@@ -120,7 +120,7 @@ public class BlockNestedJoin extends Join {
                         return outbatch;
                     }
 
-                    outbatch.add(i, leftbatch);
+                    outbatch.add(leftbatch.get(i), i);
 
                 }
 
@@ -142,24 +142,24 @@ public class BlockNestedJoin extends Join {
                     if (rcurs == 0 && lcurs == 0 && bcurs == 0) {
                         rightbatch = (Batch) in.readObject();
                     }
-                    for (int b = bcurs; b < outbatch.size; ++b) {
-                        for (i = lcurs; i < leftbatch.get(b).size(); ++i) {
+                    for (int b = bcurs; b < outbatch.size(); ++b) {
+                        for (i = lcurs; i < leftbatch.get(b).data().size(); ++i) {
                             for (j = rcurs; j < rightbatch.size(); ++j) {
-                                Tuple lefttuple = leftbatch..get(b).get(i);
+                                Tuple lefttuple = (Tuple) leftbatch.get(b).data().get(i);
                                 Tuple righttuple = rightbatch.get(j);
                                 if (lefttuple.checkJoin(righttuple, leftindex, rightindex)) {
                                     Tuple outtuple = lefttuple.joinWith(righttuple);
                                     outbatch.add(outtuple);
                                     if (outbatch.isFull()) {
-                                        if (i == leftbatch.get(b).size() - 1 && j == rightbatch.size() - 1) {  //case 1
+                                        if (i == leftbatch.get(b).data().size()- 1 && j == rightbatch.size() - 1) {  //case 1
                                             lcurs = 0;
                                             rcurs = 0;
                                             bcurs = b + 1;
-                                        } else if (i != leftbatch.get(b).size() - 1 && j == rightbatch.size() - 1) {  //case 2
+                                        } else if (i != leftbatch.get(b).data().size() - 1 && j == rightbatch.size() - 1) {  //case 2
                                             lcurs = i + 1;
                                             rcurs = 0;
                                             bcurs = b;
-                                        } else if (i == leftbatch.get(b).size() - 1 && j != rightbatch.size() - 1) {  //case 3
+                                        } else if (i == leftbatch.get(b).data().size() - 1 && j != rightbatch.size() - 1) {  //case 3
                                             lcurs = i;
                                             rcurs = j + 1;
                                             bcurs = b;
