@@ -1,5 +1,5 @@
 /**
- * Page Nested Join algorithm
+ * Block Nested Join algorithm
  **/
 
 package qp.operators;
