@@ -57,6 +57,20 @@ public class PlanCost {
     }
 
     /**
+     * @author:bernicechio
+     * Get cost for performing external sort on a relation
+     *
+     * @param numbuff = number of buffer pages
+     * @param pages = number of pages of the relation
+     * @return the I/O cost for external sort
+     */
+    protected long getExternalSortCost(long numbuff, long pages) {
+        long numberOfSortedRuns = (long) Math.ceil(pages/numbuff);
+        long numberOfPasses = 1 + (long) Math.ceil(Math.log(sortedRunsNum)/Math.log(numbuff - 1));
+        return 2 * pages * numberOfPasses;
+    }
+
+    /**
      * Get number of tuples in estimated results
      **/
     public long getNumTuples() {
@@ -76,6 +90,10 @@ public class PlanCost {
             return getStatistics((Project) node);
         } else if (node.getOpType() == OpType.SCAN) {
             return getStatistics((Scan) node);
+        } else if (node.getOpType() == OpType.DISTINCT) {
+        return getStatistics((Distinct) node);
+        } else if (node.getOpType() == OpType.GROUPBY) {
+        return getStatistics((Groupby) node);
         }
         System.out.println("operator is not supported");
         isFeasible = false;
@@ -145,6 +163,12 @@ public class PlanCost {
                 break;
             case JoinType.BLOCKNESTED:
                 joincost = (long)(leftpages + rightpages * Math.ceil(leftpages/outcapacity));
+                break;
+            case JoinType.SORTMERGE:
+                long esortcostl = (long) getExternalSortCost(numbuff, leftpages);
+                long esortcostr = (long) getExternalSortCost(numbuff, rightpages);
+                long mergecost = leftpages + rightpages;
+                joincost = esortcostl + esortcostr + mergecost;
                 break;
             default:
                 System.out.println("join type is not supported");
@@ -268,6 +292,27 @@ public class PlanCost {
             System.exit(1);
         }
         return numtuples;
+    }
+
+    /**
+     * Get the cost of a distinct node
+     *
+     * No cost involved as done on the fly
+     * @param node the plan for Distinct operator
+     * @return the number of tuples after the operation
+     */
+    private long getStatistics(Distinct node) {
+        return calculateCost((node.getBase()));
+    }
+
+    /**
+     * Get the cost of a groupby node
+     *
+     * @param node the plan for Groupby operator
+     * @return the number of tuples after the operation
+     */
+    private long getStatistics(Groupby node) {
+        return calculateCost((node.getBase()));
     }
 
 }
