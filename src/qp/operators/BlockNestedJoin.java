@@ -18,13 +18,14 @@ public class BlockNestedJoin extends Join {
     int batchsize;                  // Number of tuples per out batch
     ArrayList<Integer> leftindex;   // Indices of the join attributes in left table
     ArrayList<Integer> rightindex;  // Indices of the join attributes in right table
+    ArrayList<Batch> buff;          // Buffer page array for left table
     String rfname;                  // The file name where the right table is materialized
     Batch outbatch;                 // Buffer page for output
     Batch leftbatch;                // Buffer page for left input stream
     Batch rightbatch;               // Buffer page for right input stream
     ObjectInputStream in;           // File pointer to the right hand materialized file
 
-    int bcurs;                      // Cursor for buffer iterator
+    int bcurs;                      // Cursor for buffer
     int lcurs;                      // Cursor for left side buffer
     int rcurs;                      // Cursor for right side buffer
     boolean eosl;                   // Whether end of stream (left table) is reached
@@ -50,6 +51,7 @@ public class BlockNestedJoin extends Join {
         /** find indices attributes of join conditions **/
         leftindex = new ArrayList<>();
         rightindex = new ArrayList<>();
+        buff = new ArrayList<>();
         for (Condition con : conditionList) {
             Attribute leftattr = con.getLhs();
             Attribute rightattr = (Attribute) con.getRhs();
@@ -111,7 +113,9 @@ public class BlockNestedJoin extends Join {
         outbatch = new Batch(batchsize);
         while (!outbatch.isFull()) {
             if (lcurs == 0 && eosr == true) {
-                /** new left page is to be fetched**/
+                /** new buffer is to be fetched**/
+                buff = new ArrayList<>();
+
                 for (i = 0; i < numBuff - 2; i++) {
                     leftbatch = (Batch) left.next();
 
@@ -120,7 +124,7 @@ public class BlockNestedJoin extends Join {
                         return outbatch;
                     }
 
-                    outbatch.add(leftbatch.get(i), i);
+                    buff.add(i, leftbatch);
 
                 }
 
@@ -142,24 +146,24 @@ public class BlockNestedJoin extends Join {
                     if (rcurs == 0 && lcurs == 0 && bcurs == 0) {
                         rightbatch = (Batch) in.readObject();
                     }
-                    for (int b = bcurs; b < outbatch.size(); ++b) {
-                        for (i = lcurs; i < leftbatch.get(b).data().size(); ++i) {
+                    for (int b = bcurs; b < buff.size(); ++b) {
+                        for (i = lcurs; i < buff.get(b).size(); ++i) {
                             for (j = rcurs; j < rightbatch.size(); ++j) {
-                                Tuple lefttuple = (Tuple) leftbatch.get(b).data().get(i);
+                                Tuple lefttuple = buff.get(b).get(i);
                                 Tuple righttuple = rightbatch.get(j);
                                 if (lefttuple.checkJoin(righttuple, leftindex, rightindex)) {
                                     Tuple outtuple = lefttuple.joinWith(righttuple);
                                     outbatch.add(outtuple);
                                     if (outbatch.isFull()) {
-                                        if (i == leftbatch.get(b).data().size()- 1 && j == rightbatch.size() - 1) {  //case 1
+                                        if (i == buff.get(b).size()- 1 && j == rightbatch.size() - 1) {  //case 1
                                             lcurs = 0;
                                             rcurs = 0;
                                             bcurs = b + 1;
-                                        } else if (i != leftbatch.get(b).data().size() - 1 && j == rightbatch.size() - 1) {  //case 2
+                                        } else if (i != buff.get(b).size() - 1 && j == rightbatch.size() - 1) {  //case 2
                                             lcurs = i + 1;
                                             rcurs = 0;
                                             bcurs = b;
-                                        } else if (i == leftbatch.get(b).data().size() - 1 && j != rightbatch.size() - 1) {  //case 3
+                                        } else if (i == buff.get(b).size() - 1 && j != rightbatch.size() - 1) {  //case 3
                                             lcurs = i;
                                             rcurs = j + 1;
                                             bcurs = b;
