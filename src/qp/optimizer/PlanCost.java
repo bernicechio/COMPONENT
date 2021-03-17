@@ -66,7 +66,7 @@ public class PlanCost {
      */
     protected long getExternalSortCost(long numbuff, long pages) {
         long numberOfSortedRuns = (long) Math.ceil(pages/numbuff);
-        long numberOfPasses = 1 + (long) Math.ceil(Math.log(sortedRunsNum)/Math.log(numbuff - 1));
+        long numberOfPasses = 1 + (long) Math.ceil(Math.log(numberOfSortedRuns)/Math.log(numbuff - 1));
         return 2 * pages * numberOfPasses;
     }
 
@@ -90,11 +90,11 @@ public class PlanCost {
             return getStatistics((Project) node);
         } else if (node.getOpType() == OpType.SCAN) {
             return getStatistics((Scan) node);
-        } else if (node.getOpType() == OpType.DISTINCT) {
+        } /*else if (node.getOpType() == OpType.DISTINCT) {
         return getStatistics((Distinct) node);
         } else if (node.getOpType() == OpType.GROUPBY) {
         return getStatistics((Groupby) node);
-        }
+        }*/
         System.out.println("operator is not supported");
         isFeasible = false;
         return 0;
@@ -301,9 +301,9 @@ public class PlanCost {
      * @param node the plan for Distinct operator
      * @return the number of tuples after the operation
      */
-    private long getStatistics(Distinct node) {
-        return calculateCost((node.getBase()));
-    }
+//    protected long getStatistics(Distinct node) {
+//        return calculateCost((node.getBase()));
+//    }
 
     /**
      * Get the cost of a groupby node
@@ -311,9 +311,9 @@ public class PlanCost {
      * @param node the plan for Groupby operator
      * @return the number of tuples after the operation
      */
-    private long getStatistics(Groupby node) {
-        return calculateCost((node.getBase()));
-    }
+//    protected long getStatistics(Groupby node) {
+//        return calculateCost((node.getBase()));
+//    }
 
 }
 
