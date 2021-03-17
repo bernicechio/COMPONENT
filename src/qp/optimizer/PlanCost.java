@@ -90,15 +90,37 @@ public class PlanCost {
             return getStatistics((Project) node);
         } else if (node.getOpType() == OpType.SCAN) {
             return getStatistics((Scan) node);
-        } /*else if (node.getOpType() == OpType.DISTINCT) {
+        } else if (node.getOpType() == OpType.DISTINCT) {
         return getStatistics((Distinct) node);
-        } else if (node.getOpType() == OpType.GROUPBY) {
+        } /*else if (node.getOpType() == OpType.GROUPBY) {
         return getStatistics((Groupby) node);
         }*/
         System.out.println("operator is not supported");
         isFeasible = false;
         return 0;
     }
+
+    /**
+     * Get the cost of a distinct node
+     *
+     * No cost involved as done on the fly
+     * @param node the plan for Distinct operator
+     * @return the number of tuples after the operation
+     */
+    protected long getStatistics(Distinct node) {
+        return calculateCost((node.getBase()));
+    }
+
+    /**
+     * Get the cost of a groupby node
+     *
+     * @param node the plan for Groupby operator
+     * @return the number of tuples after the operation
+     */
+//    protected long getStatistics(Groupby node) {
+//        return calculateCost((node.getBase()));
+//    }
+
 
     /**
      * Projection will not change any statistics
@@ -293,28 +315,6 @@ public class PlanCost {
         }
         return numtuples;
     }
-
-    /**
-     * Get the cost of a distinct node
-     *
-     * No cost involved as done on the fly
-     * @param node the plan for Distinct operator
-     * @return the number of tuples after the operation
-     */
-//    protected long getStatistics(Distinct node) {
-//        return calculateCost((node.getBase()));
-//    }
-
-    /**
-     * Get the cost of a groupby node
-     *
-     * @param node the plan for Groupby operator
-     * @return the number of tuples after the operation
-     */
-//    protected long getStatistics(Groupby node) {
-//        return calculateCost((node.getBase()));
-//    }
-
 }
 
 
