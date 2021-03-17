@@ -119,15 +119,18 @@ public class BlockNestedJoin extends Join {
                 for (i = 0; i < numBuff - 2; i++) {
                     leftbatch = (Batch) left.next();
 
-                    if (leftbatch == null) {
-                        eosl = true;
-                        return outbatch;
+                    if (leftbatch != null) {
+                        buff.add(i, leftbatch);
+                    } else {
+                        break;
                     }
-
-                    buff.add(i, leftbatch);
 
                 }
 
+                if (buff.isEmpty()) {
+                    eosl = true;
+                    return outbatch;
+                }
 
                 /** Whenever a new left page came, we have to start the
                  ** scanning of right table
