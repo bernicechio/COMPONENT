@@ -76,6 +76,10 @@ public class PlanCost {
             return getStatistics((Project) node);
         } else if (node.getOpType() == OpType.SCAN) {
             return getStatistics((Scan) node);
+        } else if (node.getOpType() == OpType.DISTINCT) {
+            return getStatistics((Distinct) node);
+        } else if (node.getOpType() == OpType.GROUPBY) {
+            return getStatistics((Groupby) node);
         }
         System.out.println("operator is not supported");
         isFeasible = false;
@@ -270,6 +274,26 @@ public class PlanCost {
         return numtuples;
     }
 
+    /**
+     * Get the cost of a distinct node
+     *
+     * @param node the plan for Distinct operator
+     * @return the number of tuples after the operation
+     */
+    private long getStatistics(Distinct node) {
+        //TODO: the cost of sorting
+        return calculateCost((node.getBase()));
+    }
+
+    /**
+     * Get the cost of a groupby node
+     *
+     * @param node the plan for Groupby operator
+     * @return the number of tuples after the operation
+     */
+    private long getStatistics(Groupby node) {
+        return calculateCost((node.getBase()));
+    }
 }
 
 
