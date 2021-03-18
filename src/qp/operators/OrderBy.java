@@ -23,21 +23,23 @@ public class OrderBy extends Operator {
 
     public OrderBy(Operator base, ArrayList<Attribute> orderAttSet) {
         super(OpType.ORDERBY);
+        numBuff = BufferManager.getNumBuffer();
         this.base = base;
         this.orderAttSet = orderAttSet;
-        numBuff = BufferManager.getNumBuffer();
     }
 
+    // get ready the output by calling the sort function to sort the table
     public boolean open() {
-        //set number of tuples per batch
-        batchSize = Batch.getPageSize() / schema.getTupleSize();
-
         for (Attribute att : orderAttSet)
             asIndices.add(schema.indexOf((att)));
-        
+
         // call external sort function
         sortedFiles = new ExternalSort(base, orderAttSet, numBuff);
         sortedFiles.open();
+
+        //set number of tuples per batch
+        batchSize = Batch.getPageSize() / schema.getTupleSize();
+
         return true;
     }
 
@@ -51,8 +53,9 @@ public class OrderBy extends Operator {
         }
 
         Batch outputBatch = new Batch(batchSize);
+        // add inputBatch to outputbatch until it is full
         while (!outputBatch.isFull()) {
-            if (inputBatch == null || inputBatch.size() <= inIndex) {
+            if ( inputBatch.size() <= inIndex || inputBatch == null) {
                 eos = true;
                 break;
             }
