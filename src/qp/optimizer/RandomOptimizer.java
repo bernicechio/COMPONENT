@@ -61,6 +61,13 @@ public class RandomOptimizer {
                     bnj.setRight(right);
                     bnj.setNumBuff(numbuff);
                     return bnj;
+                case JoinType.SORTMERGE:
+                    System.out.println("SortMerge Join");
+                    SortMergeJoin sj = new SortMergeJoin((Join) node);
+                    sj.setLeft(left);
+                    sj.setRight(right);
+                    sj.setNumBuff(numbuff);
+                    return sj;
                 default:
                     return node;
             }
