@@ -66,7 +66,7 @@ public class PlanCost {
      * @return the I/O cost for external sort
      */
     protected long getExternalSortCost(long numbuff, long pages) {
-        long numberOfSortedRuns = (long) Math.ceil(pages/numbuff);
+        long numberOfSortedRuns = (long) Math.ceil(1.0 * pages/numbuff);
         long numberOfPasses = 1 + (long) Math.ceil(Math.log(numberOfSortedRuns)/Math.log(numbuff - 1));
         return 2 * pages * numberOfPasses;
     }
@@ -93,9 +93,12 @@ public class PlanCost {
             return getStatistics((Scan) node);
         } else if (node.getOpType() == OpType.DISTINCT) {
             return getStatistics((Distinct) node);
+        } else if (node.getOpType() == OpType.ORDERBY) {
+            return getStatistics((OrderBy) node);
         } else if (node.getOpType() == OpType.GROUPBY) {
             return getStatistics((Groupby) node);
         }
+
         System.out.println("operator is not supported");
         isFeasible = false;
         return 0;
@@ -112,17 +115,31 @@ public class PlanCost {
         return calculateCost((node.getBase()));
     }
 
-    protected long getStatistics(Groupby node) { return calculateCost((node.getBase())); }
     /**
      * Get the cost of a groupby node
      *
      * @param node the plan for Groupby operator
      * @return the number of tuples after the operation
      */
-//    protected long getStatistics(Groupby node) {
-//        return calculateCost((node.getBase()));
-//    }
+    protected long getStatistics(Groupby node) { return calculateCost((node.getBase())); }
+    
+   
 
+    /**
+     * Get the cost of a OrderBy
+     *
+     * The cost should be similar to the cost of external sort
+     * @param node the plan for OrderBy operator
+     * @return the number of tuples after the operation
+     */
+    protected long getStatistics(OrderBy node) {
+        long intuples = calculateCost(node.getBase());
+        if (!isFeasible) {
+            System.out.println("notFeasible");
+            return Long.MAX_VALUE;
+        }
+        return intuples;
+    }
 
     /**
      * Projection will not change any statistics
@@ -131,6 +148,8 @@ public class PlanCost {
     protected long getStatistics(Project node) {
         return calculateCost(node.getBase());
     }
+
+
 
     /**
      * Calculates the statistics and cost of join operation
