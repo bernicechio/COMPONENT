@@ -176,6 +176,9 @@ public class ExternalSort extends Operator {
                         Tuple tuple = (Tuple) inStreams[nextBatchID].readObject();
                     } catch (EOFException e) {
                         break;
+                    } catch (NullPointerException e) {
+                        System.out.println("Null pointer exception");
+                        break;
                     }
                 }
                 inBatches[nextBatchID] = inBatch;
@@ -191,7 +194,10 @@ public class ExternalSort extends Operator {
         }
 
         for (ObjectInputStream inStream : inStreams) {
-            inStream.close();
+            try {inStream.close(); }
+            catch (NullPointerException e) {
+                System.out.println("Object null pointer exception");
+            }
         }
         outStream.close();
     }
