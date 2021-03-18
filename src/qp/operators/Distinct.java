@@ -92,10 +92,10 @@ public class Distinct extends Operator {
      * Read next tuple from operator
      */
     public Batch next() {
+        System.out.println("DISTINCT");
         outbatch = new Batch(batchsize);
         /** all the tuples in the inbuffer goes to the output buffer **/
-        inbatch = base.next();
-
+        inbatch = externalSortBase.next();
         if (inbatch == null) {
             return null;
         }
