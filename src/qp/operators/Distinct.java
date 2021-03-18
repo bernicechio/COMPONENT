@@ -94,7 +94,7 @@ public class Distinct extends Operator {
     public Batch next() {
         outbatch = new Batch(batchsize);
         /** all the tuples in the inbuffer goes to the output buffer **/
-        inbatch = base.next();
+        inbatch = externalSortBase.next();
 
         if (inbatch == null) {
             return null;
