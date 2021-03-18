@@ -7,6 +7,7 @@ package qp.optimizer;
 import qp.operators.*;
 import qp.utils.*;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -50,16 +51,6 @@ public class RandomInitialPlan {
      **/
     public Operator prepareInitialPlan() {
 
-        if (sqlquery.getGroupByList().size() > 0) {
-            System.err.println("GroupBy is not implemented.");
-            System.exit(1);
-        }
-
-//        if (sqlquery.getOrderByList().size() > 0) {
-//            System.err.println("Orderby is not implemented.");
-//            System.exit(1);
-//        }
-
         tab_op_hash = new HashMap<>();
         createScanOp();
         createSelectOp();
@@ -67,8 +58,11 @@ public class RandomInitialPlan {
             createJoinOp();
         }
         createProjectOp();
-        createDistinctOp();
         createOrderByOp();
+        if (this.sqlquery.isDistinct()) {
+            createDistinctOp();
+        }
+        createGrouchyOp();
         return root;
     }
 
@@ -196,7 +190,7 @@ public class RandomInitialPlan {
         if (projectlist == null)
             projectlist = new ArrayList<Attribute>();
         if (!projectlist.isEmpty()) {
-            root = new Project(base, projectlist, OpType.DISTINCT);
+            root = new Distinct(base, projectlist, OpType.DISTINCT);
             Schema newSchema = base.getSchema().subSchema(projectlist);
             root.setSchema(newSchema);
         }
@@ -207,6 +201,14 @@ public class RandomInitialPlan {
     public void createOrderByOp() {
         if (sqlquery.isOrderBy()) {
             OrderBy operator = new OrderBy(root, orderbylist);
+            operator.setSchema(root.getSchema());
+            root = operator;
+        }
+    }
+
+    public void createGrouchyOp() {
+        if (sqlquery.isGroupby()) {
+            Groupby operator = new Groupby(root, sqlquery.getGroupByList(), OpType.GROUPBY);
             operator.setSchema(root.getSchema());
             root = operator;
         }

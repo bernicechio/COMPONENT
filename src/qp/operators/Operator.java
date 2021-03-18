@@ -50,7 +50,6 @@ public class Operator {
     public Object clone() {
         return new Operator(optype);
     }
-
 }
 
 

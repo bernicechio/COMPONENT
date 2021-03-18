@@ -77,6 +77,8 @@ public class SQLQuery {
         return isDistinct;
     }
 
+    public boolean isGroupby() { return groupbyList != null && !groupbyList.isEmpty(); }
+
     public ArrayList<Attribute> getProjectList() {
         return projectList;
     }

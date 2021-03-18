@@ -11,6 +11,7 @@ import qp.utils.Batch;
 import qp.utils.Condition;
 import qp.utils.Schema;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -91,13 +92,13 @@ public class PlanCost {
         } else if (node.getOpType() == OpType.SCAN) {
             return getStatistics((Scan) node);
         } else if (node.getOpType() == OpType.DISTINCT) {
-        return getStatistics((Distinct) node);
+            return getStatistics((Distinct) node);
         } else if (node.getOpType() == OpType.ORDERBY) {
             return getStatistics((OrderBy) node);
+        } else if (node.getOpType() == OpType.GROUPBY) {
+            return getStatistics((Groupby) node);
         }
-        /*else if (node.getOpType() == OpType.GROUPBY) {
-        return getStatistics((Groupby) node);
-        }*/
+
         System.out.println("operator is not supported");
         isFeasible = false;
         return 0;
@@ -120,9 +121,9 @@ public class PlanCost {
      * @param node the plan for Groupby operator
      * @return the number of tuples after the operation
      */
-//    protected long getStatistics(Groupby node) {
-//        return calculateCost((node.getBase()));
-//    }
+    protected long getStatistics(Groupby node) { return calculateCost((node.getBase())); }
+    
+   
 
     /**
      * Get the cost of a OrderBy
