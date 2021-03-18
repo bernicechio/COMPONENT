@@ -65,7 +65,9 @@ public class RandomInitialPlan {
             createJoinOp();
         }
         createProjectOp();
-        createDistinctOp();
+        if (this.sqlquery.isDistinct()) {
+            createDistinctOp();
+        }
         return root;
     }
 
@@ -187,15 +189,15 @@ public class RandomInitialPlan {
             root.setSchema(newSchema);
         }
     }
-
     public void createDistinctOp() {
         Operator base = root;
         if (projectlist == null)
             projectlist = new ArrayList<Attribute>();
         if (!projectlist.isEmpty()) {
-            root = new Project(base, projectlist, OpType.DISTINCT);
+            root = new Distinct(base, projectlist, OpType.DISTINCT);
             Schema newSchema = base.getSchema().subSchema(projectlist);
             root.setSchema(newSchema);
+
         }
     }
 

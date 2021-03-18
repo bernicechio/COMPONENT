@@ -91,7 +91,7 @@ public class PlanCost {
         } else if (node.getOpType() == OpType.SCAN) {
             return getStatistics((Scan) node);
         } else if (node.getOpType() == OpType.DISTINCT) {
-        return getStatistics((Distinct) node);
+            return getStatistics((Distinct) node);
         } /*else if (node.getOpType() == OpType.GROUPBY) {
         return getStatistics((Groupby) node);
         }*/

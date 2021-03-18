@@ -16,7 +16,8 @@ public class Distinct extends Operator {
     Operator base;                 // Base table to project
     ArrayList<Attribute> attrset;  // Set of attributes to project
     int batchsize;                 // Number of tuples per outbatch
-
+    int numBuff;
+    private ExternalSort externalSortBase;
     /**
      * The following fields are requied during execution
      * * of the Project Operator
@@ -48,6 +49,9 @@ public class Distinct extends Operator {
         return attrset;
     }
 
+    public void setNumBuff(int numBuff) {
+        this.numBuff = numBuff;
+    }
 
     /**
      * Opens the connection to the base operator
@@ -77,6 +81,10 @@ public class Distinct extends Operator {
             int index = baseSchema.indexOf(attr.getBaseAttribute());
             attrIndex[i] = index;
         }
+        externalSortBase = new ExternalSort(base, attrset, numBuff);
+
+        if (!externalSortBase.open()) return false;
+
         return true;
     }
 
@@ -105,11 +113,11 @@ public class Distinct extends Operator {
             /*
             * @author: bernicechio
             * if outtuple is the same as outbatch's last tuple, don't add.
-            * Note: this is assuming that the tuples from inbatch are already sorted by external sort
             */
             Tuple last_outtuple = outbatch.get(outbatch.size()-1);
             if (last_outtuple == null || !isSame(outtuple, last_outtuple)) {
                 outbatch.add(outtuple);
+                last_outtuple = outtuple;
             }
         }
         return outbatch;
