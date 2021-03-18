@@ -77,7 +77,12 @@ public class RandomOptimizer {
             ((Distinct) node).setBase(base);
             ((Distinct) node).setNumBuff(numbuff);
             return node;
-        }else {
+        } else if (node.getOpType() == OpType.GROUPBY) {
+            Operator base = makeExecPlan(((Groupby) node).getBase());
+            ((Groupby) node).setBase(base);
+            ((Groupby) node).setNumBuff(numbuff);
+            return node;
+        } else {
             return node;
         }
     }

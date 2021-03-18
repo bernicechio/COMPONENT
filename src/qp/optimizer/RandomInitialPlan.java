@@ -7,6 +7,7 @@ package qp.optimizer;
 import qp.operators.*;
 import qp.utils.*;
 
+import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -48,11 +49,6 @@ public class RandomInitialPlan {
      **/
     public Operator prepareInitialPlan() {
 
-        if (sqlquery.getGroupByList().size() > 0) {
-            System.err.println("GroupBy is not implemented.");
-            System.exit(1);
-        }
-
         if (sqlquery.getOrderByList().size() > 0) {
             System.err.println("Orderby is not implemented.");
             System.exit(1);
@@ -68,6 +64,7 @@ public class RandomInitialPlan {
         if (this.sqlquery.isDistinct()) {
             createDistinctOp();
         }
+        createGrouchyOp();
         return root;
     }
 
@@ -189,6 +186,7 @@ public class RandomInitialPlan {
             root.setSchema(newSchema);
         }
     }
+
     public void createDistinctOp() {
         Operator base = root;
         if (projectlist == null)
@@ -197,7 +195,14 @@ public class RandomInitialPlan {
             root = new Distinct(base, projectlist, OpType.DISTINCT);
             Schema newSchema = base.getSchema().subSchema(projectlist);
             root.setSchema(newSchema);
+        }
+    }
 
+    public void createGrouchyOp() {
+        if (sqlquery.isGroupby()) {
+            Groupby operator = new Groupby(root, sqlquery.getGroupByList(), OpType.GROUPBY);
+            operator.setSchema(root.getSchema());
+            root = operator;
         }
     }
 
