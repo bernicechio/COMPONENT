@@ -10,9 +10,9 @@ public class OrderBy extends Operator {
 
     Operator base;
     int batchSize; // No. of tuples per page
-    int numOfBuffer; //No. of buffer available
+    int numBuff; //No. of buffer available
     Batch inputBatch = null; // Page read in memory
-    Sort sortedFiles;
+    ExternalSort sortedFiles;
 
     ArrayList<Attribute> orderAttSet; // Order Set of attribute list
     ArrayList<Integer> asIndices = new ArrayList<>(); //Attribute  list of schema to be ordered
@@ -25,7 +25,7 @@ public class OrderBy extends Operator {
         super(OpType.ORDERBY);
         this.base = base;
         this.orderAttSet = orderAttSet;
-        numOfBuffer = BufferManager.getNumBuffer();
+        numBuff = BufferManager.getNumBuffer();
     }
 
     public boolean open() {
@@ -34,9 +34,9 @@ public class OrderBy extends Operator {
 
         for (Attribute att : orderAttSet)
             asIndices.add(schema.indexOf((att)));
-
-        // call sort function
-        sortedFiles = new Sort(base, orderAttSet,numOfBuffer);
+        
+        // call external sort function
+        sortedFiles = new ExternalSort(base, orderAttSet, numBuff);
         sortedFiles.open();
         return true;
     }
