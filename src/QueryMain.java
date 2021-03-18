@@ -93,7 +93,7 @@ public class QueryMain {
      **/
 
     private static void configureBufferManager(int numJoin, String[] args, BufferedReader in, SQLQuery sqlQuery) {
-        if (numJoin != 0 || sqlQuery.isDistinct() || sqlquery.isOrderBy || sqlQuery.isGroupby()) {
+        if (numJoin != 0 || sqlQuery.isDistinct() || sqlQuery.isOrderBy() || sqlQuery.isGroupby()) {
             int numBuff = 1000;
             if (args.length < 4) {
                 System.out.println("enter the number of buffers available");
