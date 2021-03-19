@@ -119,14 +119,16 @@ public class BlockNestedJoin extends Join {
                 for (i = 0; i < numBuff - 2; i++) {
                     leftbatch = (Batch) left.next();
 
-                    if (leftbatch != null) {
-                        buff.add(i, leftbatch);
-                    } else {
+                    // stop filling buffer if there are no more left pages
+                    if (leftbatch == null) {
                         break;
+                    } else {
+                        buff.add(i, leftbatch);
                     }
 
                 }
 
+                // stop output pages if there are no left pages in buffer
                 if (buff.isEmpty()) {
                     eosl = true;
                     return outbatch;
