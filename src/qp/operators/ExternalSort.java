@@ -23,6 +23,7 @@ public class ExternalSort extends Operator {
     private ObjectInputStream resultOfSort;
     // Notify if the out-of-stream result is reached for sorting
     private boolean eos = false;
+    private boolean isDec;
 
     /**
      * Creates a new external sort operator
@@ -36,6 +37,20 @@ public class ExternalSort extends Operator {
         this.schema = base.schema;
         this.numBuff = numBuff;
         this.batchSize = Batch.getPageSize() / schema.getTupleSize();
+
+        for (int i = 0; i < attributes.size(); i++) {
+            Attribute attribute = (Attribute) attributes.get(i);
+            indexOfAttributes.add(schema.indexOf(attribute));
+        }
+    }
+
+    public ExternalSort(Operator base, ArrayList attributes, int numBuff, boolean isDec) {
+        super(OpType.SORT);
+        this.base = base;
+        this.schema = base.schema;
+        this.numBuff = numBuff;
+        this.batchSize = Batch.getPageSize() / schema.getTupleSize();
+        this.isDec = isDec;
 
         for (int i = 0; i < attributes.size(); i++) {
             Attribute attribute = (Attribute) attributes.get(i);
@@ -245,12 +260,22 @@ public class ExternalSort extends Operator {
 
     // compare if the attributes of the two tuples are equal
     private int isEqual(Tuple t1, Tuple t2) {
-        for (int i : indexOfAttributes) {
-            int result = Tuple.compareTuples(t1, t2, i);
-            if (result != 0) {
-                return result;
+        if (isDec) {
+            for (int i : indexOfAttributes) {
+                int result = Tuple.compareTuples(t1, t2, i);
+                if (result != 0) {
+                    return -result;
+                }
             }
+            return 0;
+        } else {
+            for (int i : indexOfAttributes) {
+                int result = Tuple.compareTuples(t1, t2, i);
+                if (result != 0) {
+                    return result;
+                }
+            }
+            return 0;
         }
-        return 0;
     }
 }
