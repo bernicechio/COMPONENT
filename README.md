@@ -4,7 +4,7 @@ Team: Bernice Chio Hui Yin, Chen Jiehan, Wong Kee Hui
 Project Report: https://docs.google.com/document/d/1gCHY9UpeLvViSYrkQRe5MJVtQ7RBzDfhzRMs5LbQuII/edit?usp=sharing
 
 Instructions:
-1. download the COMPONENT file and ```./build.sh```
+1. download the COMPONENT .zip file and ```./build.sh```
 2. ```source queryenv``` to set up the environment
 3. ```java QueryMain query.in query.out``` to execute SQL Query in ```query.in```
 
