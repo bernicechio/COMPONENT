@@ -1,6 +1,7 @@
 # COMPONENT
 CS3223 PROJECT
 Team: Bernice Chio Hui Yin, Chen Jiehan, Wong Kee Hui 
+
 Project Report: https://docs.google.com/document/d/1gCHY9UpeLvViSYrkQRe5MJVtQ7RBzDfhzRMs5LbQuII/edit?usp=sharing
 
 Instructions:
