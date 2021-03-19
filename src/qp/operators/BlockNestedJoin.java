@@ -121,17 +121,12 @@ public class BlockNestedJoin extends Join {
 
                     // stop filling buffer if there are no more left pages
                     if (leftbatch == null) {
-                        break;
+                        eosl = true;
+                        return outbatch;
                     } else {
                         buff.add(i, leftbatch);
                     }
 
-                }
-
-                // stop output pages if there are no left pages in buffer
-                if (buff.isEmpty()) {
-                    eosl = true;
-                    return outbatch;
                 }
 
                 /** Whenever a new left page came, we have to start the
