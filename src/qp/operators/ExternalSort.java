@@ -177,7 +177,7 @@ public class ExternalSort extends Operator {
                     } catch (EOFException e) {
                         break;
                     } catch (NullPointerException e) {
-                        System.out.println("Null pointer exception");
+                        System.out.println("Null Pointer exception");
                         break;
                     }
                 }
