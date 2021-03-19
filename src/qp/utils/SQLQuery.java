@@ -23,6 +23,7 @@ public class SQLQuery {
 
     boolean isDistinct = false;          // Whether distinct key word appeared in select clause
     boolean isDec = false;
+    boolean isAsc = false;
 
     public SQLQuery(ArrayList<Attribute> list1, ArrayList<String> list2, ArrayList<Condition> list3) {
         projectList = list1;
@@ -125,6 +126,19 @@ public class SQLQuery {
 
     public void setIsDesc(boolean value) {
         isDec = value;
-        System.out.print("Is Desc" + value);
+        System.out.println("Is Desc" + value);
+    }
+
+    public boolean getIsDesc() {
+        return isDec;
+    }
+
+    public void setIsAsc(boolean value) {
+        isAsc = value;
+        System.out.println("Is Asc" + value);
+    }
+
+    public boolean getIsAsc() {
+        return isAsc;
     }
 }

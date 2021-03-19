@@ -32,7 +32,15 @@ STRING_LITERAL=\"{CHAR}*\"
  
 %%
 
+<YYINITIAL,NEGATE> DESC {
+  yybegin(YYINITIAL);
+  return new Symbol(sym.DESC,yyline,yychar,new TokenValue(yytext()));
+}
 
+<YYINITIAL,NEGATE> ASC {
+  yybegin(YYINITIAL);
+  return new Symbol(sym.ASC,yyline,yychar,new TokenValue(yytext()));
+}
 
 <YYINITIAL,NEGATE> SELECT {
   yybegin(YYINITIAL);
@@ -158,7 +166,3 @@ STRING_LITERAL=\"{CHAR}*\"
   return new Symbol(sym.DOT,yyline,yychar,new TokenValue(yytext()));
 }
 
-<YYINITIAL,NEGATE> DESC {
-  yybegin(YYINITIAL);
-  return new Symbol(sym.DESC,yyline,yychar,new TokenValue(yytext()));
-}
