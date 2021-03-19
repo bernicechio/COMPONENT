@@ -18,14 +18,16 @@ public class OrderBy extends Operator {
     ArrayList<Integer> asIndices = new ArrayList<>(); //Attribute  list of schema to be ordered
 
     boolean eos = false; // Denote whether the end of table is reached
+    boolean isDec;
 
     int inIndex = 0; // Tuple index from input
 
-    public OrderBy(Operator base, ArrayList<Attribute> orderAttSet) {
+    public OrderBy(Operator base, ArrayList<Attribute> orderAttSet, boolean isDec) {
         super(OpType.ORDERBY);
         numBuff = BufferManager.getNumBuffer();
         this.base = base;
         this.orderAttSet = orderAttSet;
+        this.isDec = isDec;
     }
 
     // get ready the output by calling the sort function to sort the table
@@ -34,7 +36,11 @@ public class OrderBy extends Operator {
             asIndices.add(schema.indexOf((att)));
 
         // call external sort function
-        sortedFiles = new ExternalSort(base, orderAttSet, numBuff);
+        if (isDec) {
+            sortedFiles = new ExternalSort(base, orderAttSet, numBuff, isDec);
+        } else {
+            sortedFiles = new ExternalSort(base, orderAttSet, numBuff);
+        }
         sortedFiles.open();
 
         //set number of tuples per batch
@@ -77,7 +83,7 @@ public class OrderBy extends Operator {
         for(Attribute att : orderAttSet)
             cloneOrderedList.add(att);
 
-        OrderBy cloneOrderBy = new OrderBy(cloneBase, cloneOrderedList);
+        OrderBy cloneOrderBy = new OrderBy(cloneBase, cloneOrderedList, isDec);
         Schema cloneSchema = cloneBase.getSchema();
         cloneOrderBy.setSchema(cloneSchema);
         return cloneOrderBy;

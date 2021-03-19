@@ -200,7 +200,7 @@ public class RandomInitialPlan {
      */
     public void createOrderByOp() {
         if (sqlquery.isOrderBy()) {
-            OrderBy operator = new OrderBy(root, orderbylist);
+            OrderBy operator = new OrderBy(root, orderbylist, sqlquery.getIsDesc());
             operator.setSchema(root.getSchema());
             root = operator;
         }
