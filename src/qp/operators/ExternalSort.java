@@ -177,7 +177,7 @@ public class ExternalSort extends Operator {
                     } catch (EOFException e) {
                         break;
                     } catch (NullPointerException e) {
-                        System.out.println("Null Pointer exception");
+                        //System.out.println("Null Pointer exception");
                         break;
                     }
                 }
@@ -196,7 +196,7 @@ public class ExternalSort extends Operator {
         for (ObjectInputStream inStream : inStreams) {
             try {inStream.close(); }
             catch (NullPointerException e) {
-                System.out.println("Object null pointer exception");
+                //System.out.println("Object null pointer exception");
             }
         }
         outStream.close();
