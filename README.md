@@ -1,5 +1,4 @@
-# COMPONENT
-CS3223 PROJECT
+# CS3223 PROJECT
 Team: Bernice Chio Hui Yin, Chen Jiehan, Wong Kee Hui 
 
 Project Report: https://docs.google.com/document/d/1gCHY9UpeLvViSYrkQRe5MJVtQ7RBzDfhzRMs5LbQuII/edit?usp=sharing
@@ -16,3 +15,5 @@ On top of the SPJ engine, we implemented the following algorithms:
 3.     DISTINCT
 4.     Orderby
 5.     Groupby
+
+Note: Data tables and SQL queries for the experiment can be found in data_experiment folder
