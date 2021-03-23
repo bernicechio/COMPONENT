@@ -19,6 +19,7 @@ public class Distinct extends Operator {
     int numBuff;
     private ExternalSort externalSortBase;
     private Tuple last_outtuple = null;
+    private int inIndex = 0;
     /**
      * The following fields are requied during execution
      * * of the Project Operator
@@ -102,6 +103,7 @@ public class Distinct extends Operator {
             return null;
         }
 
+        /**
         for (int i = 0; i < inbatch.size(); i++) {
             Tuple basetuple = inbatch.get(i);
             //Debug.PPrint(basetuple);
@@ -112,13 +114,29 @@ public class Distinct extends Operator {
                 present.add(data);
             }
             Tuple outtuple = new Tuple(present);
-            /*
-             * @author: bernicechio
-             * if outtuple is the same as outbatch's last tuple, don't add.
-             */
+
             if (last_outtuple == null || !isSame(outtuple, last_outtuple)) {
                 outbatch.add(outtuple);
                 last_outtuple = outtuple;
+            }
+        }*/
+
+        while (!outbatch.isFull()) {
+            if (inbatch.isFull() || inbatch.size() <= inIndex) {
+                close();
+                break;
+            }
+
+            Tuple current = inbatch.get(inIndex);
+            if (last_outtuple == null || isSame(last_outtuple, current)) {
+                outbatch.add(current);
+                last_outtuple = current;
+            }
+            inIndex++;
+
+            if (inIndex == batchsize) {
+                inbatch = externalSortBase.next();
+                inIndex = 0;
             }
         }
         return outbatch;
